@@ -6,6 +6,7 @@
 name: Documentation Release
 
 'on':
+  pull_request:
   push:
     branches:
       - master
