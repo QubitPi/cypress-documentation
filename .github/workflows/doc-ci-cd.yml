@@ -1,0 +1,34 @@
+# Copyright (c) Jiaqi Liu.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+---
+name: Documentation Release
+
+'on':
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy-documentation:
+    name: Deploy Documentation to GitHub Pages
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: npm install
+      - name: Build documentation
+        run: npm run build
+      - name: Deploy to GitHub Pages
+        # if: github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist
+          user_name: QubitPi
+          user_email: jack20220723@gmail.com
