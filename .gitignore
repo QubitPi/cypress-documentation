@@ -34,3 +34,5 @@ cypress/videos
 themes
 .eslintcache
 db.json
+
+.idea/
