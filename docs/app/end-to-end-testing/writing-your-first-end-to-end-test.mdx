@@ -155,7 +155,28 @@ All of these functions come from
 - `expect` comes from [Chai](http://www.chaijs.com)
 
 Cypress builds on these popular tools and frameworks that you _hopefully_
-already have some familiarity and knowledge of. If not, that's okay too.
+already have some familiarity and knowledge of. If not, that's okay too. Let's briefly discuss about them.
+
+**describe** is a simple BDD DSL for writing tests. BDD tests read like sentences and it should thus be easier to
+understand what the specification of a function/component is. Its usage is the following
+
+```
+describe(description, code)
+
+it(description, code = NULL)
+```
+
+- `description` - description of the feature
+- `code` - test code containing the specs. Note that this is NOT the return code or some number from running a command
+
+Tests using the `describe` syntax not only _verify_ the tested code, but also _document_ its intended behaviour. **Each
+`describe` block specifies a larger component or function and contains a set of specifications. A specification is
+defined by an `it` block**. Each `it` block functions as a test and is evaluated in its own environment. We can also
+have nested `describe` blocks.
+
+This test syntax helps to test the intended behaviour of our code. For example: we want to write a new function for our
+package. Try to describe the specification first using `describe`, before we write any code. After that, we start to
+implement the tests for each specification (i.e. the `it` block).
 
 :::
 
