@@ -1,0 +1,168 @@
+---
+title: Working with GitHub Actions
+slug: /guides/end-to-end-testing/working-with-github-actions
+---
+
+:::info
+
+## <Icon name="graduation-cap" /> What we'll learn
+
+- Best practices to deduplicate and parallelize E2E tests in GitHub Action
+
+:::
+
+
+Running Cypress E2E tests are very costly, especially when software becomes large with tens of spec files. Although
+Cypress offers "dashboard" feature, which claims to offere parallel testing, it is better to confine all CI/CD logics,
+including testing, inside GitHub realm. Unfortunately, GitHub Actions offers limited parallelism which make things a
+little hard. 
+
+What we would like to achieve is the following
+
+- All CI/CD logics, inclusing tests, stays in GitHub
+- Each `spec.ts` file is a workflow job, so that CI/CD can parallelize E2E tests at test file granularity
+- All E2E tests run (an in parallel as well) in two environments: dev & prod
+- No code duplication, i.e. configuration in dev tests never repeats in prod tests
+
+The purpose of having dev and prod environments is to answer the following question during test:
+
+_If a test in production environment fails, is this a code bug or simply because our environment got screwed up?_
+
+For example, when a login page is not showing up, it could be someone's new code put login page into an
+undesirable state, in which case it's a bug, or our production server puts our app in a wront HTTP port, in which case
+it's an configuration management issue.
+
+The way we package and run web app in the two environments will be very different. In dev
+(`./.github/scripts/dev-e2e-test-script.sh`):
+
+```bash
+#!/bin/bash
+
+yarn start &
+yarn wait-on-dev
+yarn e2e --spec "$SPEC_FILE_PATH"
+```
+
+In prod (`./.github/scripts/prod-e2e-test-script.sh`):
+
+```bash
+#!/bin/bash
+
+yarn build
+npm install -g serve
+serve -s dist -l 8080 &
+yarn wait-on-prod
+yarn e2e --spec "$SPEC_FILE_PATH"
+```
+
+The main CI/CD workflow looks like this:
+
+:::info
+
+The `list-e2e-test-specs` step scans spec folder using
+[List Files Action](https://github.com/marketplace/actions/list-files-action) so that team member won't need to risk
+remembing add new spec file into `test_spec` field below
+
+:::
+
+
+```yml
+---
+
+...
+
+jobs:
+
+  ...
+
+  list-e2e-test-specs:
+    runs-on: ubuntu-latest
+    outputs:
+      paths: ${{ steps.list-e2e-test-specs.outputs.paths }}
+    steps:
+      - name: List Files
+        id: list-e2e-test-specs
+        uses: mirko-felice/list-files-action@v3.0.5
+        with:
+          repo: ${{ github.repository }}
+          ref: ${{ github.ref }}
+          path: "cypress/e2e"
+          ext: ".ts"
+
+  e2e-tests:
+    name: E2E Tests
+    strategy:
+      fail-fast: false
+      matrix:
+        test_env: ["dev", "prod"]
+        test_spec: ${{ fromJson(needs.list-e2e-test-specs.outputs.paths) }}
+    uses: ./.github/workflows/e2e-tests.yml
+    secrets: inherit
+    with:
+      testing_env: ${{ matrix.test_env }}
+      spec_file_path: ${{ matrix.test_spec }}
+
+  ...
+``
+
+Next, the `e2e-tests.yml` is dedicated to running a specific spec file in a specific evironment:
+
+```yaml
+---
+name: CI/CD E2E Tests
+
+"on":
+  workflow_call:
+    inputs:
+      testing_env:
+        required: true
+        type: string
+      spec_file_path:
+        required: true
+        type: string
+
+jobs:
+  e2e-tests:
+    name: E2E Tests (${{ inputs.spec_file_path }}) in ${{ inputs.testing_env }} Mode
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node_version: [16]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set node version to ${{ matrix.node_version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node_version }}
+      - name: Install dependencies
+        run: yarn install
+      - name: Load app environment variables
+        run: |
+          touch .env
+          if [[ ${{ inputs.testing_env }} == 'dev' ]]; then
+              echo "NODE_ENV=development" >> .env
+          else
+              echo "NODE_ENV=production" >> .env
+          fi
+      - name: Run E2E tests in ${{ inputs.testing_env }} mode
+        shell: bash
+        run: |
+          if [[ ${{ inputs.testing_env }} == 'dev' ]]; then
+              .github/scripts/dev-e2e-test-script.sh
+          else
+              .github/scripts/prod-e2e-test-script.sh
+          fi
+        env:
+          SPEC_FILE_PATH: ${{ inputs.spec_file_path }}
+      - name: Upload test videos and screenshots on test failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.testing_env }}-${{ inputs.spec_file_path }}-${{ matrix.node_version }}
+          path: |
+            ./cypress/videos
+            ./cypress/screenshots
+```
