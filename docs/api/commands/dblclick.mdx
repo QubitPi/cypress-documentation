@@ -195,6 +195,18 @@ cy.get('li:first').dblclick({
 `.dblclick()` is an "action command" that follows all the rules of
 [Actionability](/app/core-concepts/interacting-with-elements).
 
+## Troubleshooting
+
+### Cypress's dblclick does not function the same way as a user double clicking
+
+We can issue a click command followed by the dblclick to workaround this. For example:
+
+```js
+cy.get('[data-testid="my-svg"]')
+  .trigger('click', 200, 200, { force: true })
+  .trigger('dblclick', 200, 200, { force: true })
+```
+
 ## Rules
 
 <HeaderRequirements />
