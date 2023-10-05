@@ -293,8 +293,17 @@ for more info.
 along with additional insights and [analytics](/guides/cloud/analytics/overview) for
 Cypress tests.
 
+:::caution
+
 Using parallelization with the Cypress GitHub Action requires setting up
 recording to [Cypress Cloud](https://on.cypress.io/cloud).
+
+In general, it is a good strategy to confine all CI/CD logics, including tests, in one realm. To have everything
+contained in GitHub Action, please use this
+[reusable workflow](https://github.com/QubitPi/github-management#cypress-e2e-tests-in-parallel-with-spec-file-granularity)
+as an alternative to the Cypress Cloud
+
+:::
 
 GitHub Actions offers a
 [matrix strategy](https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix)
