@@ -579,6 +579,57 @@ Cypress.Commands.overwrite(
 )
 ```
 
+### Set Browser Language
+
+```ts
+it("The i18n translates the text to English when the browser language is English", () => {
+  cy.setBrowserLanguage("en-US", ["en"], ["en"]);
+  cy.get("input[id=noteTitleInput]").should("have.value", "Untitled Note");
+});
+
+it("The i18n translates the text to Chinese when the browser language is Chinese", () => {
+  cy.setBrowserLanguage("zh-CN", ["zh"], ["zh"]);
+  cy.get("input[id=noteTitleInput]").should("have.value", "无标题笔记");
+});
+```
+
+In _cypress/support/commands.ts_:
+
+```ts
+Cypress.Commands.add("setBrowserLanguage", (language, languages, acceptLanguages) => {
+  cy.visit("http://localhost:3000/", {
+    onBeforeLoad(win) {
+      Object.defineProperty(win.navigator, "language", { value: language });
+      Object.defineProperty(win.navigator, "languages", { value: languages });
+      Object.defineProperty(win.navigator, "accept_languages", { value: acceptLanguages });
+    },
+  });
+});
+```
+
+And in [**cypress.d.ts** definition file](/guides/tooling/typescript-support#Types-for-Custom-Commands), we add
+
+```ts
+declare namespace Cypress {
+  interface Chainable<Subject> {
+    /**
+     * Login via UI
+     *
+     * @example cy.login({username: "user", password: "password"})
+     */
+    login({ username, password }: Record<string, string>): Chainable<void>;
+
+    ...
+    // highlight-start
+    setBrowserLanguage(language: string, languages: string[], acceptLanguages: string[]): Chainable<void>;
+    // highlight-end
+  }
+}
+```
+
+
+
+
 ## Validations
 
 As noted in the [Arguments](#Arguments) above, you can also set `prevSubject` to

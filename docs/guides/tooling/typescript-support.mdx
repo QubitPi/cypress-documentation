@@ -139,8 +139,46 @@ declare global {
 
 :::info
 
-A nice detailed JSDoc comment above the method type will be really appreciated
-by any users of your custom command.
+How to declare types for Cypress custom commands under typescript-eslint/no-namespace?
+
+:::
+
+:::info How to declare types for Cypress custom commands under typescript-eslint/no-namespace?
+
+Note that Typescript ESLint is unhappy about this due to
+["ES2015 module syntax is preferred over custom TypeScript modules and namespaces @typescript-eslint/no-namespace"](https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/docs/rules/no-namespace.md).
+
+[`@typescript-eslint/no-namespace` rule allows `declare` with custom TypeScript namespaces inside definition files](https://typescript-eslint.io/rules/no-namespace/).
+So we may create a **cypress.d.ts** definition file and cut the types for our custom commands/assertions from the
+support file into this file:
+
+```ts
+// ./cypress.d.ts
+
+declare namespace Cypress {
+  interface Chainable {
+    /**
+     * Custom command to select DOM element by data-cy attribute.
+     * @example cy.dataCy('greeting')
+     */
+    dataCy(value: string): Chainable<Element>
+  }
+}
+```
+
+We might need to include the `*.d.ts` in the include options in any _tsconfig.json_ files in our project for TypeScript
+to pick up the new types:
+
+```json
+// tsconfig.json
+
+"include": [
+  "src",
+  "./cypress.d.ts"
+]
+```
+
+check [TypeScript Configuration](/guides/tooling/typescript-support#Using-an-External-Typings-File) for more info.
 
 :::
 
