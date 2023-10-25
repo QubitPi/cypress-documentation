@@ -55,7 +55,7 @@ set pseudo classes like `hover`.
 #### Simulating `mouseover` event to get popover to display
 
 ```javascript
-cy.get('.menu-item').trigger('mouseover')
+cy.get('.menu-item').trigger('mouseover', {force: true}).trigger('mouseenter', {force: true})
 cy.get('.popover').should('be.visible')
 ```
 
