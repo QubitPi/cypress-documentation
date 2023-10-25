@@ -101,7 +101,7 @@ The DOM element must be in an "interactable" state prior to the triggered event
 happening (it must be visible and not disabled).
 
 ```javascript
-cy.get('button').trigger('mouseover') // yields 'button'
+cy.get('button').trigger('mouseover', {force: true}).trigger('mouseenter', {force: true}) // yields 'button'
 ```
 
 #### Simulate a "long press" event
