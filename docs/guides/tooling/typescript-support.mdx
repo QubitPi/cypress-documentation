@@ -43,7 +43,8 @@ with the following configuration:
   "compilerOptions": {
     "target": "es5",
     "lib": ["es5", "dom"],
-    "types": ["cypress", "node"]
+    "types": ["cypress", "node"],
+    "strictNullChecks": true
   },
   "include": ["**/*.ts"]
 }
@@ -56,6 +57,9 @@ from Cypress. This will address instances where the project also uses
 [jQuery](/guides/references/bundled-libraries#Other-Library-Utilities) are
 namespaces (globals), incompatible versions will cause the package manager
 (`yarn` or `npm`) to nest and include multiple definitions and cause conflicts.
+
+The `"strictNullChecks": true` option is to let
+[Cypress work well with ESLint](https://github.com/standard/eslint-config-standard-with-typescript/issues/481#issuecomment-808831288)
 
 :::caution
 
