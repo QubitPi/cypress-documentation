@@ -13,7 +13,7 @@ export default function DocsVideo({ src, title }: DocsVideoProps) {
     <>
       {isYouTube && <VideoYouTube src={src} title={title} />}
       {isVimeo && <VideoVimeo src={src} title={title} />}
-      {isLocalVideo && <LocalVideo src={"/cypress-documentation" + src} title={title} />}
+      {isLocalVideo && <LocalVideo src={src} title={title} />}
     </>
   );
 }
