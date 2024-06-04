@@ -4,7 +4,7 @@
   <ShortName>Cypress Documentation</ShortName>
   <Description>Search Cypress Documentation</Description>
   <InputEncoding>UTF-8</InputEncoding>
-  <Url type="text/html" method="get" template="https://QubitPi.github.io/cypress-documentation/search?q={searchTerms}"/>
-  <Url type="application/opensearchdescription+xml" rel="self" template="https://QubitPi.github.io/cypress-documentation/opensearch.xml" />
-  <moz:SearchForm>https://QubitPi.github.io/cypress-documentation/</moz:SearchForm>
+  <Url type="text/html" method="get" template="https://cypress.qubitpi.org/search?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://cypress.qubitpi.org/opensearch.xml" />
+  <moz:SearchForm>https://cypress.qubitpi.org/</moz:SearchForm>
 </OpenSearchDescription>
