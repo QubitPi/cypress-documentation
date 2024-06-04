@@ -18,8 +18,8 @@ const config = {
   title: 'Cypress Documentation',
   tagline:
     'Fast, easy and reliable testing for anything that runs in a browser.',
-  url: 'https://QubitPi.github.io/',
-  baseUrl: '/cypress-documentation/',
+  url: 'https://cypress.qubitpi.org/',
+  baseUrl: '/',
   organizationName: 'QubitPi',
   projectName: 'cypress-documentation',
   onBrokenLinks: 'throw',
