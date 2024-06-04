@@ -12,7 +12,7 @@ export default function DocsImage({
   return (
     <div className={s.docsImage}>
       <img
-        src={"/cypress-documentation" + src}
+        src={src}
         alt={alt || title || caption}
         title={title}
         style={width && { width }}
