@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkcypress_docusaurus_ts=self.webpackChunkcypress_docusaurus_ts||[]).push([[3237],{9754:(s,e,u)=>{u.r(e),u.d(e,{default:()=>t});var r=u(7294),c=u(6550);function t(){return r.createElement(c.l_,{to:"/guides/overview/why-cypress"})}}}]);
